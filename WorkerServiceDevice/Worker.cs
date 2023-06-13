@@ -1,6 +1,7 @@
 using System.Text.Json;
 using System.Text;
 using Microsoft.Azure.Devices.Client;
+using WorkerServiceDevice.Models;
 
 namespace WorkerServiceDevice;
 
@@ -25,35 +26,27 @@ public class Worker : BackgroundService
 
         while (!stoppingToken.IsCancellationRequested)
         {
-            //_logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
-            //await Task.Delay(1000, stoppingToken);
+            Console.WriteLine();
+            Console.WriteLine("---------- New openDoorRequest -----------");
+            OpenDoorRequest openDoorRequest = new OpenDoorRequest();
 
-            Console.WriteLine("Insert a random code consisting of five numbers: ");
-            string picRandGeneratedCode = Console.ReadLine().ToString();
+            Console.Write("DoorId: ");
+            openDoorRequest.DoorId = Convert.ToInt32(Console.ReadLine());
 
-            string building = "A";
-            string raspberryID = "1";
-            string doorID = "1001";
+            Console.Write("GatewayId: ");
+            openDoorRequest.GatewayId = Convert.ToInt32(Console.ReadLine());
 
-            Console.WriteLine("Building: " + building);
-            Console.WriteLine("RaspberryID: " + raspberryID);
-            Console.WriteLine("PIC random generated code: " + picRandGeneratedCode);
-            Console.WriteLine("Door ID: " + doorID);
+            Console.Write("DeviceGeneratedCode: ");
+            openDoorRequest.DeviceGeneratedCode = Convert.ToInt32(Console.ReadLine());
 
-            List<Packet> packets = new List<Packet>();
+            Console.Write("CloudGeneratedCode: ");
+            openDoorRequest.CloudGeneratedCode = Convert.ToInt32(Console.ReadLine());
 
-            packets.Add(new Packet("building", building));
-            packets.Add(new Packet("raspberryID", raspberryID));
-            packets.Add(new Packet("picRandGeneratedCode", picRandGeneratedCode));
-            packets.Add(new Packet("doorID", doorID));
+            openDoorRequest.AccessRequestTime = DateTime.Now;
 
 
             // Create JSON message
-            string messageBody = JsonSerializer.Serialize(
-            new
-            {
-                openDoorRequest = packets
-            });
+            string messageBody = JsonSerializer.Serialize(openDoorRequest);
             using var message = new Message(Encoding.ASCII.GetBytes(messageBody))
             {
                 ContentType = "application/json",
