@@ -34,13 +34,13 @@ public class Worker : BackgroundService
             openDoorRequest.DoorId = Convert.ToInt32(Console.ReadLine());
 
             Console.Write("GatewayId: ");
-            openDoorRequest.GatewayId = Convert.ToInt32(Console.ReadLine());
+            openDoorRequest.DeviceId = Console.ReadLine();
 
             Console.Write("DeviceGeneratedCode: ");
             openDoorRequest.DeviceGeneratedCode = Convert.ToInt32(Console.ReadLine());
 
-            Console.Write("CloudGeneratedCode: ");
-            openDoorRequest.CloudGeneratedCode = Convert.ToInt32(Console.ReadLine());
+            //Console.Write("CloudGeneratedCode: ");
+            //openDoorRequest.CloudGeneratedCode = Convert.ToInt32(Console.ReadLine());
 
             openDoorRequest.AccessRequestTime = DateTime.Now;
 
