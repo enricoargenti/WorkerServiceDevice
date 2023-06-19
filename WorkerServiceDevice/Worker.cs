@@ -30,14 +30,16 @@ public class Worker : BackgroundService
             Console.WriteLine("---------- New openDoorRequest -----------");
             OpenDoorRequest openDoorRequest = new OpenDoorRequest();
 
+            openDoorRequest.TypeOfMessage = "newOpenDoorRequest";
+
             Console.Write("DoorId: ");
             openDoorRequest.DoorId = Convert.ToInt32(Console.ReadLine());
 
-            Console.Write("GatewayId: ");
+            Console.Write("DeviceId: ");
             openDoorRequest.DeviceId = Console.ReadLine();
 
             Console.Write("DeviceGeneratedCode: ");
-            openDoorRequest.DeviceGeneratedCode = Convert.ToInt32(Console.ReadLine());
+            openDoorRequest.DeviceGeneratedCode = Console.ReadLine();
 
             //Console.Write("CloudGeneratedCode: ");
             //openDoorRequest.CloudGeneratedCode = Convert.ToInt32(Console.ReadLine());
@@ -56,6 +58,41 @@ public class Worker : BackgroundService
             await deviceClient.SendEventAsync(message, stoppingToken);
 
             //Thread.Sleep(1000);
+
+            Console.WriteLine();
+            Console.WriteLine("---------- New openDoorRequestStep2 -----------");
+            OpenDoorRequest openDoorRequestStep2 = new OpenDoorRequest();
+
+            openDoorRequestStep2.TypeOfMessage = "secondMessageFromDoor";
+
+            Console.Write("DoorId: ");
+            openDoorRequestStep2.DoorId = Convert.ToInt32(Console.ReadLine());
+
+            Console.Write("DeviceId: ");
+            openDoorRequestStep2.DeviceId = Console.ReadLine();
+
+            // Bisognerà imporre al PIC di mandare questo codice anche nel secondo messaggio
+            openDoorRequestStep2.DeviceGeneratedCode = openDoorRequest.DeviceGeneratedCode;
+
+            Console.Write("CodeInsertedOnDoorByUser: ");
+            openDoorRequestStep2.CodeInsertedOnDoorByUser = Console.ReadLine();
+
+            //Console.Write("CloudGeneratedCode: ");
+            //openDoorRequest.CloudGeneratedCode = Convert.ToInt32(Console.ReadLine());
+
+            openDoorRequestStep2.AccessRequestTime = DateTime.Now;
+
+
+            // Create JSON message
+            string messageBodyStep2 = JsonSerializer.Serialize(openDoorRequestStep2);
+            using var messageStep2 = new Message(Encoding.ASCII.GetBytes(messageBodyStep2))
+            {
+                ContentType = "application/json",
+                ContentEncoding = "utf-8",
+            };
+            // Send the telemetry message
+            await deviceClient.SendEventAsync(messageStep2, stoppingToken);
+
         }
     }
 }
